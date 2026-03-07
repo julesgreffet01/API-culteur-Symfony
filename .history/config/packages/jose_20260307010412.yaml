@@ -1,0 +1,9 @@
+jose:
+    jws:
+        builders:
+            my_jws_builder:
+                signature_algorithms: ['HS256']
+
+        verifiers:
+            my_jws_verifier:
+                signature_algorithms: ['HS256']
