@@ -16,9 +16,11 @@
     <div class="container">
         <div class="header">
             <h1>{{ block('title') }}</h1>
+            {% if app.user %}
             <form action="{{ path('app_logout') }}" method="POST">
                 <button class="btn btn-new">Logout</button>
             </form>
+            {% endif %}
         </div>
         {% block body %}{% endblock %}
     </div>
