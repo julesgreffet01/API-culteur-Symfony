@@ -23,8 +23,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?string $password = null;
+    #[ORM\Column]
+    private ?string $name = null;
 
-    #[ORM\Column(enumType: RoleEnum::class)]
+
+    #[ORM\Column(name: 'role_id', enumType: RoleEnum::class)]
     private RoleEnum $role;
 
     public function getId(): ?int
@@ -46,6 +49,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->username;
+    }
+
+    public function getRole(){
+        return $this->role;
     }
 
     public function setRole(RoleEnum $role): static
@@ -77,4 +84,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $data;
     }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+
 }

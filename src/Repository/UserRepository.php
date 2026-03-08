@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -38,11 +37,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getUsersPagination(int $page){
         return new Paginator($this->createQueryBuilder('u')
-            ->setMaxResults(20)
-            ->setFirstResult(($page - 1) * 20)
+            ->setMaxResults(10)
+            ->setFirstResult(($page - 1) * 10)
             ->setHint(Paginator::HINT_ENABLE_DISTINCT, false),
             false
         );
+    }
+
+    public function save(User $user, bool $flush = true){
+        $this->getEntityManager()->persist($user);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function delete(User $user, bool $flush = true){
+        $this->getEntityManager()->remove($user);
+        $this->getEntityManager()->flush();
     }
 
     //    /**
