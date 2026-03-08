@@ -1,20 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserManagerController!{% endblock %}
+{% block title %}Users{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>J:/projets/API-culteur/user_manager/src/Controller/UserManagerController.php</code></li>
-        <li>Your template at <code>J:/projets/API-culteur/user_manager/templates/user_manager/index.html.twig</code></li>
-    </ul>
-</div>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                <span>{{ message }}</span>
+                <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div>
+        <form action="{{ path('app_user_create') }}">
+            <button class="btn btn-new">Nouveau</button>
+        </form>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Nom de la personne</th>
+            <th>Nom d'utilisateur (identifiant)</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role.name }}</td>
+                <td>
+                    <div class="actions">
+                        <form action="{{ path('app_user_update', {id: user.id}) }}" method="get">
+                            <button class="btn btn-update">Modifier</button>
+                        </form>
+                        <form action="{{ path('app_user_delete', {id: user.id}) }}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button class="btn-suppr btn">Supprimer</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="pages">
+        <div>
+            <div class="change-page">
+                <p>{{ currentPage }}/{{ maxPage }}</p>
+                {% if currentPage > 1 %}
+                    <a href="{{ path('app_user_list', {'_query': {'page': currentPage - 1}}) }}">
+                        <
+                    </a>
+                {% endif %}
+                {% if currentPage < maxPage %}
+                    <a href="{{ path('app_user_list', {'_query': {'page': currentPage + 1}}) }}">
+                        >
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

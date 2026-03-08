@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if action == 'update' %}
+        Modification de l'utilisateur "<i>{{ user.name }}</i>"
+    {% elseif action == 'create' %}
+        Creation d'un utilisateur
+    {% else %}
+        Formulaire user
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="form-container">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </div>
+    <form action="{{ path('app_user_list') }}">
+        <button class="btn btn-suppr">Retour</button>
+    </form>
+{% endblock %}
