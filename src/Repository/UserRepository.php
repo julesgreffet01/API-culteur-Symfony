@@ -6,6 +6,8 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -16,7 +18,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
 
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct($registry, User::class);
     }
@@ -54,6 +56,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function delete(User $user, bool $flush = true){
         $this->getEntityManager()->remove($user);
         $this->getEntityManager()->flush();
+    }
+
+    public function authenticateUserForJwt(string $email, string $password): User
+    {
+        $user = $this->findOneBy(['email' => $email]);
+        if (!$user) {
+            //timing attack
+            $fakeUser = new User();
+            $fakeUser->setPassword('$2y$13$C8wS0QJ3R1hQ0mY8n2L6eO0mYxgK0n8R4sYV6vXz2OQm7QmGm6V2K');
+            $this->passwordHasher->isPasswordValid($fakeUser, $password);
+            throw new BadCredentialsException();
+        }
+        if (!$this->passwordHasher->isPasswordValid($user, $password)) {
+            throw new BadCredentialsException();
+        }
+        return $user;
     }
 
     //    /**

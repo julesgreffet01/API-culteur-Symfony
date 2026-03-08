@@ -16,6 +16,9 @@
     <div class="container">
         <div class="header">
             <h1>{{ block('title') }}</h1>
+            <form action="{{ path('app_logout') }}" method="POST">
+                <button class="btn btn-new">Logout</button>
+            </form>
         </div>
         {% block body %}{% endblock %}
     </div>
